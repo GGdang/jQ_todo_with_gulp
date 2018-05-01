@@ -34,6 +34,9 @@ let cleanCSS = require('gulp-clean-css');
 //壓縮js
 var uglify = require('gulp-uglify');
 
+//將public後的版本，上傳到github上並建立pages
+var ghPages = require('gulp-gh-pages');
+
 //設定gulp環境(ex:開發環境時，不壓縮檔案---發佈時，壓縮檔案)
 var minimist = require('minimist');
 var envOptions = {
@@ -159,6 +162,11 @@ gulp.task('imagemin', function(){
         .pipe(gulpif(options.env==="public",imagemin()))
         .pipe(gulp.dest('dist/images'))
 })
+
+gulp.task('public', function() {
+    return gulp.src('./dist/**/*')
+      .pipe(ghPages());
+  });
 
 gulp.task('watch', function () {
     //監控資料夾，有變動執行後面的function
