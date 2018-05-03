@@ -65,7 +65,7 @@ var imagemin = require('gulp-imagemin');
 
 //gulp設定方法
 gulp.task('clean', function () {
-    return gulp.src(['./.tmp','./dist'], {read: false})
+    return gulp.src(['./.tmp','./dist','./.publish'], {read: false})
         .pipe(clean());
 });
 
@@ -75,7 +75,7 @@ gulp.task('copyhtml',function(){
 })
 
 gulp.task('tranSass', function () {
-    return gulp.src('./src/scss/**/*.scss')
+    return gulp.src(['./src/scss/**/*.scss','./node_modules/bootstrap/scss/bootstrap.scss'])
         .pipe(plumber())
         .pipe(sourcemaps.init())
         .pipe(sass().on('error', sass.logError))
@@ -90,18 +90,18 @@ gulp.task('tranSass', function () {
         // .pipe(browserSync.stream());
 })
 
-gulp.task('tranPluginsSass', function () {
-    return gulp.src('./.tmp/vendors/**/*.scss')
-        .pipe(plumber())
-        .pipe(sass().on('error', sass.logError))
-        //以編譯成CSS
-        .pipe(autoprefixer({
-            browsers: ['last 2 version']
-        }))
-        .pipe(concat('plugins.css'))
-        .pipe(cleanCSS())
-        .pipe(gulp.dest('./dist/css/'))
-})
+// gulp.task('tranPluginsSass', function () {
+//     return gulp.src('./.tmp/vendors/**/*.scss')
+//         .pipe(plumber())
+//         .pipe(sass().on('error', sass.logError))
+//         //以編譯成CSS
+//         .pipe(autoprefixer({
+//             browsers: ['last 2 version']
+//         }))
+//         .pipe(concat('plugins.css'))
+//         .pipe(cleanCSS())
+//         .pipe(gulp.dest('./dist/css/'))
+// })
 
 gulp.task('babel', () =>
     gulp.src('./src/js/**/*.js')
@@ -129,8 +129,8 @@ gulp.task('bower', function(){
             overrides:{
                 bootstrap:{
                     main:[
-                        './dist/js/bootstrap.js',
-                        './scss/**/*.scss',
+                        './dist/js/bootstrap.js'
+                        // './scss/**/*.scss',
                     ]
                 }
             }
@@ -164,7 +164,7 @@ gulp.task('imagemin', function(){
 })
 
 gulp.task('public', function() {
-    return gulp.src('./dist/**/*')
+    return gulp.src(['./dist/**/*'])
       .pipe(ghPages());
   });
 
@@ -173,8 +173,9 @@ gulp.task('watch', function () {
     gulp.watch('./src/scss/**/*.scss', ['tranSass'])
     gulp.watch('./src/js/**/*.js', ['babel'])
     gulp.watch('src/**/*.html',['copyhtml'])
+    gulp.watch('src/images/*',['imagemin'])
 });
 
-gulp.task('build', gulpSequence('clean','copyhtml','tranSass','babel','vendorJs','tranPluginsSass','imagemin'))
+gulp.task('build', gulpSequence('clean','copyhtml','tranSass','babel','vendorJs','imagemin'))
 
-gulp.task('default', ['copyhtml','tranSass','babel','vendorJs','tranPluginsSass','imagemin','watch']);
+gulp.task('default', ['copyhtml','tranSass','babel','vendorJs','imagemin','watch']);
